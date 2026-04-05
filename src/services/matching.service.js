@@ -1,30 +1,28 @@
-const redis = require("./../config/redis");
+const IORedis = require("ioredis");
 
+const redis = new IORedis({
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+});
+
+// Find riders near restaurant
 exports.findNearbyRiders = async (lat, lng) => {
-  const radius = Number(process.env.REDIS_GEO_RADIUS) || 5;
+  const radiusInKm = 5;
 
-  const results = await redis.geosearch(
+  const riders = await redis.geosearch(
     "riders:locations",
     "FROMLONLAT",
     lng,
     lat,
     "BYRADIUS",
-    radius,
+    radiusInKm,
     "km",
     "WITHDIST",
     "ASC",
-    "COUNT",
-    5,
   );
 
-  if (!results || results.length === 0) {
-    return [];
-  }
-
-  return results.map((r) => {
-    return {
-      riderId: r[0],
-      distance: parseFloat(r[1]),
-    };
-  });
+  return riders.map((r) => ({
+    riderId: r[0],
+    distance: parseFloat(r[1]),
+  }));
 };

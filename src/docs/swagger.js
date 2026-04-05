@@ -11,7 +11,7 @@ const options = {
     },
     servers: [
       {
-        url: `http://localhost:${process.env.PORT || 8081}`,
+        url: `http://127.0.0.1:${process.env.PORT || 8081}/api/v1`,
       },
     ],
     components: {

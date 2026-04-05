@@ -17,25 +17,25 @@ const worker = new Worker(
     switch (job.name) {
       case "assign-rider": {
         const { orderId, restaurantLat, restaurantLng } = job.data;
-        console.log(orderId, restaurantLat, restaurantLng);
 
         if (!orderId) {
-          throw new Error("Missing orderId in job");
+          throw new Error("Missing orderId");
         }
 
-        if (!restaurantLat || !restaurantLng) {
+        if (restaurantLat == null || restaurantLng == null) {
           throw new Error("Missing coordinates");
         }
+
+        console.log("Finding riders near:", restaurantLat, restaurantLng);
 
         const riders = await findNearbyRiders(restaurantLat, restaurantLng);
 
         if (!riders || riders.length === 0) {
-          console.log("No riders found");
-          return null;
+          throw new Error("No riders found"); // triggers retry
         }
 
         const selectedRider = riders[0];
-        const riderId = selectedRider.riderId || selectedRider.id;
+        const riderId = selectedRider.riderId;
 
         console.log("🚴 Assigning rider:", riderId);
 
@@ -49,8 +49,6 @@ const worker = new Worker(
           },
         );
 
-        const updatedOrder = await Order.findByPk(orderId);
-
         console.log("Order updated with rider");
 
         return {
@@ -58,6 +56,9 @@ const worker = new Worker(
           riderId,
         };
       }
+
+      default:
+        console.log("Unknown job:", job.name);
     }
   },
   {
@@ -79,5 +80,5 @@ worker.on("error", (err) => {
 });
 
 worker.on("ready", () => {
-  console.log("Worker is ready and listening...");
+  console.log("Worker is ready...");
 });

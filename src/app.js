@@ -5,8 +5,11 @@ const helmet = require("helmet");
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://127.0.0.1",
+  }),
+);
 app.use(helmet());
 
 const setupSwagger = require("./docs/swagger");

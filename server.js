@@ -1,6 +1,6 @@
 require("dotenv").config();
 const sequelize = require("./src/config/mysql.db");
-const { Order } = require("./src/models");
+const Order = require("./src/models/order.model");
 
 const app = require("./src/app");
 
@@ -11,15 +11,14 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-// Start server only after DB connects
 const port = process.env.PORT || 8081;
 
-// sequelize.sync({ alter: true });
+// sequelize.sync({ force: true });
 sequelize.sync();
 
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
-  console.log(Order.associations);
+  // console.log("Order association-", Order.associations);
 });
 
 // Handle unhandled promise rejections

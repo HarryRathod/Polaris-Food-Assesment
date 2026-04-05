@@ -16,7 +16,6 @@ const Restaurant = sequelize.define(
     phone: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
       validate: {
         is: /^[6-9]\d{9}$/,
       },
@@ -41,10 +40,7 @@ const Restaurant = sequelize.define(
   {
     timestamps: true,
     tableName: "restaurants",
-    indexes: [
-      { unique: true, fields: ["phone"] },
-      { fields: ["latitude", "longitude"] },
-    ],
+    indexes: [{ fields: ["latitude", "longitude"] }],
   },
 );
 

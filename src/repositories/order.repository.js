@@ -27,45 +27,80 @@ exports.getOrder = async (id) => {
   return order;
 };
 
-// Get user orders
-exports.getOrdersByUserId = async (userId) => {
-  return await Order.findAll({
-    where: { userId },
-    include: [
-      {
-        model: Restaurant,
-        as: "restaurant",
-        attributes: ["id", "name", "phone", "address"],
-      },
-      {
-        model: Rider,
-        as: "rider",
-        attributes: ["id", "name", "phone"],
-        required: false,
-      },
-    ],
-    order: [["createdAt", "DESC"]],
-  });
+exports.getOrdersById = async (id, type, page = 1, limit = 10) => {
+  const safePage = Math.max(1, parseInt(page) || 1);
+  const safeLimit = Math.min(parseInt(limit) || 10, 50);
+  const offset = (safePage - 1) * safeLimit;
+
+  let result;
+
+  if (type === "user") {
+    const userId = id;
+
+    result = await Order.findAndCountAll({
+      where: { userId },
+      include: [
+        {
+          model: Restaurant,
+          as: "restaurant",
+          attributes: ["id", "name", "phone", "address"],
+        },
+        {
+          model: Rider,
+          as: "rider",
+          attributes: ["id", "name", "phone"],
+          required: false,
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+      limit: safeLimit,
+      offset,
+    });
+  } else {
+    const riderId = id;
+
+    result = await Order.findAndCountAll({
+      where: { riderId, status: "DELIVERED" },
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "name", "phone"],
+        },
+        {
+          model: Restaurant,
+          as: "restaurant",
+          attributes: ["id", "name", "address"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+      limit: safeLimit,
+      offset,
+    });
+  }
+
+  return {
+    total: result.count,
+    page: safePage,
+    totalPages: Math.ceil(result.count / safeLimit),
+    hasNext: safePage * safeLimit < result.count,
+    data: result.rows,
+  };
 };
 
-exports.getDeliveredOrdersByRider = async (riderId) => {
-  return await Order.findAll({
-    where: {
-      riderId,
-      status: "DELIVERED",
-    },
-    include: [
-      {
-        model: User,
-        as: "user",
-        attributes: ["id", "name", "phone"],
-      },
-      {
-        model: Restaurant,
-        as: "restaurant",
-        attributes: ["id", "name", "address"],
-      },
-    ],
-    order: [["createdAt", "DESC"]],
-  });
+exports.updateOrder = async (id, status) => {
+  try {
+    console.log(id);
+    const [updatedCount, updatedRows] = await Order.update(status, {
+      where: { id },
+    });
+    if (!updatedRows || updatedRows.length === 0) {
+      const updatedOrder = await Order.findByPk(id);
+      return updatedOrder;
+    }
+
+    return updatedRows[0];
+  } catch (error) {
+    throw error;
+  }
 };

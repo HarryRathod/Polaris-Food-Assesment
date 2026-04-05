@@ -28,11 +28,12 @@ exports.placeOrder = async (req, res) => {
   }
 };
 
-exports.getUserOrders = async (req, res) => {
+exports.getOrders = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { id, type } = req.user;
+    const { page = 1, limit = 10 } = req.query;
 
-    const orders = await orderService.getUserOrders(userId);
+    const orders = await orderService.getOrders(id, type, page, limit);
 
     return res.status(200).json({
       success: true,
@@ -69,37 +70,17 @@ exports.updateStatus = async (req, res) => {
       });
     }
 
-    await orderService.updateStatus(req.params.id, status);
+    await orderService.updateStatus(req.params.orderId, status);
 
     res.status(200).json({
       success: true,
       message: "Order updated",
     });
   } catch (err) {
+    console.log(err);
     res.status(500).json({
       success: false,
       error: err.message,
-    });
-  }
-};
-
-exports.getRiderDeliveredOrders = async (req, res) => {
-  try {
-    const { riderId } = req.params;
-
-    const orders = await orderService.getRiderDeliveredOrders(riderId);
-
-    return res.status(200).json({
-      success: true,
-      count: orders.length,
-      data: orders,
-    });
-  } catch (error) {
-    console.error("Rider Orders Error:", error);
-
-    return res.status(500).json({
-      success: false,
-      error: error.message,
     });
   }
 };

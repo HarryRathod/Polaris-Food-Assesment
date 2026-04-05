@@ -16,11 +16,9 @@ exports.findByEmail = (email) =>
     where: { email, isActive: true },
   });
 
-exports.findById = async (id) => {
-  const user = await User.findByPk(id);
-  if (!user) throw new Error("User not found");
-  return user;
-};
-
 exports.findByPhone = (phone) =>
   User.findOne({ where: { phone, isActive: true } });
+
+exports.getUserById = async (id) => {
+  return await User.findByPk(id);
+};
