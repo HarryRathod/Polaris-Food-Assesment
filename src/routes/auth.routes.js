@@ -1,6 +1,7 @@
 const authRouter = require("express").Router();
 const controller = require("./../controllers/auth.controller");
 const rateLimit = require("express-rate-limit");
+const authMiddleware = require("./../middlewares/auth.middleware");
 
 // Rate limiter
 const authLimiter = rateLimit({
@@ -121,5 +122,9 @@ authRouter.post("/register", controller.register);
  *         description: Server error
  */
 authRouter.post("/login", controller.login);
+
+authRouter.get("/me", authMiddleware, controller.aboutMe);
+
+authRouter.post("/logout", controller.logout);
 
 module.exports = authRouter;

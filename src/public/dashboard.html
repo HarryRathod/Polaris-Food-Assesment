@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <h2>Food App</h2>
+      <div id="navLinks"></div>
+    </div>
+
+    <div class="container">
+      <div class="section">
+        <h3>Search Restaurants</h3>
+        <input id="lat" placeholder="Latitude" />
+        <input id="lng" placeholder="Longitude" />
+        <button id="restaurantBtn">Search</button>
+      </div>
+
+      <div id="content"></div>
+
+      <div class="section">
+        <h3>Add Restaurant</h3>
+        <input id="r_name" placeholder="Name" />
+        <input id="r_address" placeholder="Address" /><br />
+        <input id="r_lat" placeholder="Latitude" />
+        <input id="r_lng" placeholder="Longitude" /><br />
+        <button id="addRestaurantBtn">Add</button>
+      </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/dashboard.js"></script>
+  </body>
+</html>

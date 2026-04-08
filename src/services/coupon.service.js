@@ -69,7 +69,6 @@ exports.addCoupon = async (data) => {
 exports.getActiveCoupons = async (page, limit) => {
   const cacheKey = `activeCoupons:${page}:${limit}`;
 
-  // 1. Try fetching from cache
   const cachedData = await redis.get(cacheKey);
 
   if (cachedData) {
@@ -77,7 +76,6 @@ exports.getActiveCoupons = async (page, limit) => {
     return JSON.parse(cachedData);
   }
 
-  // 2. If not in cache → fetch from DB
   console.log("Cache miss, DB hit");
 
   const coupons = await couponRepository.getActiveCoupons(page, limit);
@@ -86,7 +84,7 @@ exports.getActiveCoupons = async (page, limit) => {
     throw new Error("No active coupons found");
   }
 
-  // 3. Store in cache (TTL = 6 hours = 21600 seconds)
+  // Store in cache (TTL = 6 hours = 21600 seconds)
   await redis.set(cacheKey, JSON.stringify(coupons), "EX", 21600);
 
   return coupons;

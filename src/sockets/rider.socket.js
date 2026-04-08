@@ -1,52 +1,74 @@
 const redis = require("./../config/redis");
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 
-exports.initSocket = (io) => {
-  // Auth middleware
-  io.use((socket, next) => {
-    const token = socket.handshake.auth?.token;
-
-    if (!token) return next(new Error("Unauthorized"));
-
+function startRiderLocationUpdates(lng, lat, riderId, frequency) {
+  const intervalId = setInterval(async () => {
     try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      socket.user = decoded;
-      next();
-    } catch {
-      next(new Error("Invalid token"));
+      await redis.geoadd("riders:locations", lng, lat, riderId);
+    } catch (error) {
+      console.error(error);
     }
-  });
+  }, frequency);
 
-  io.on("connection", (socket) => {
-    console.log("Socket connected:", socket.id);
+  return intervalId;
+}
 
-    const riderId = socket.user.id;
-    socket.join(`rider:${riderId}`);
+const demoRider = startRiderLocationUpdates(
+  78.2705,
+  21.0843,
+  "b9d4b288-bc80-4632-b40e-fef1f2357e67",
+  5000,
+);
 
-    let lastUpdate = 0;
+// To stop the after 30 seconds:
+// setTimeout(() => clearInterval(demoRider), 30000);
 
-    socket.on("updateLocation", async (data) => {
-      const { lat, lng } = data;
+// exports.initSocket = (io) => {
+//   // Auth middleware
+//   io.use((socket, next) => {
+//     const token = socket.handshake.auth?.token;
 
-      if (typeof lat !== "number" || typeof lng !== "number") {
-        return;
-      }
+//     if (!token) return next(new Error("Unauthorized"));
 
-      const now = Date.now();
-      if (now - lastUpdate < 2000) return;
-      lastUpdate = now;
+//     try {
+//       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//       socket.user = decoded;
+//       next();
+//     } catch {
+//       next(new Error("Invalid token"));
+//     }
+//   });
 
-      try {
-        await redis.geoadd("riders", lng, lat, riderId);
-        console.log(`Updated location for rider ${riderId}`);
-      } catch (err) {
-        console.error("Redis error:", err);
-      }
-    });
+//   io.on("connection", (socket) => {
+//     console.log("Socket connected:", socket.id);
 
-    socket.on("disconnect", async () => {
-      console.log("Socket disconnected:", riderId);
-      await redis.zrem("riders", riderId);
-    });
-  });
-};
+//     const riderId = socket.user.id;
+//     socket.join(`rider:${riderId}`);
+
+//     let lastUpdate = 0;
+
+//     socket.on("updateLocation", async (data) => {
+//       const { lat, lng } = data;
+
+//       if (typeof lat !== "number" || typeof lng !== "number") {
+//         return;
+//       }
+
+//       const now = Date.now();
+//       if (now - lastUpdate < 2000) return;
+//       lastUpdate = now;
+
+//       try {
+//         await redis.geoadd("riders:locations", lng, lat, riderId);
+//         console.log(`Updated location for rider ${riderId}`);
+//       } catch (err) {
+//         console.error("Redis error:", err);
+//       }
+//     });
+
+//     socket.on("disconnect", async () => {
+//       console.log("Socket disconnected:", riderId);
+//       await redis.zrem("riders", riderId);
+//     });
+//   });
+// };

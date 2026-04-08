@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Register</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <h2>Food App</h2>
+      <div id="navLinks"></div>
+    </div>
+
+    <div class="container">
+      <div class="card">
+        <input id="name" placeholder="Name" />
+        <input id="email" placeholder="Email" />
+        <input id="password" type="password" />
+        <input id="phone" placeholder="Phone" />
+        <select id="type">
+          <option value="user">User</option>
+          <option value="rider">Rider</option>
+        </select>
+        <button id="registerBtn">Register</button>
+      </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+  </body>
+</html>

@@ -28,6 +28,7 @@ const Restaurant = sequelize.define(
       type: DataTypes.FLOAT,
       allowNull: false,
     },
+
     longitude: {
       type: DataTypes.FLOAT,
       allowNull: false,

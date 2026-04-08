@@ -40,6 +40,13 @@ const specs = swaggerJsdoc(options);
 
 module.exports = (app) => {
   if (process.env.NODE_ENV !== "production") {
+    // Swagger UI
     app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
+
+    // ✅ ADD THIS: Swagger JSON endpoint
+    app.get("/swagger.json", (req, res) => {
+      res.setHeader("Content-Type", "application/json");
+      res.send(specs);
+    });
   }
 };

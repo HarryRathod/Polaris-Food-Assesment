@@ -31,7 +31,7 @@ const worker = new Worker(
         const riders = await findNearbyRiders(restaurantLat, restaurantLng);
 
         if (!riders || riders.length === 0) {
-          throw new Error("No riders found"); // triggers retry
+          throw new Error("No riders found");
         }
 
         const selectedRider = riders[0];

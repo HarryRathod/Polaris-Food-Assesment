@@ -3,11 +3,9 @@ const User = require("../models/user.model");
 const Restaurant = require("../models/restaurant.model");
 const Rider = require("../models/rider.model");
 
-// Create order
 exports.createOrder = (data, transaction) =>
   Order.create(data, { transaction });
 
-// Get single order
 exports.getOrder = async (id) => {
   const order = await Order.findByPk(id, {
     include: [
@@ -60,7 +58,8 @@ exports.getOrdersById = async (id, type, page = 1, limit = 10) => {
     const riderId = id;
 
     result = await Order.findAndCountAll({
-      where: { riderId, status: "DELIVERED" },
+      // where: { riderId, status: "DELIVERED" },
+      where: { riderId },
       include: [
         {
           model: User,
@@ -90,7 +89,13 @@ exports.getOrdersById = async (id, type, page = 1, limit = 10) => {
 
 exports.updateOrder = async (id, status) => {
   try {
-    console.log(id);
+    // console.log(id);
+    const rider = await Rider.findByPk(riderId);
+
+    if (!rider) {
+      throw new Error("Invalid rider");
+    }
+
     const [updatedCount, updatedRows] = await Order.update(status, {
       where: { id },
     });

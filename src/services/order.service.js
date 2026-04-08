@@ -148,7 +148,7 @@ exports.placeOrder = async (data) => {
   });
 
   // Invalidate orders cache for this user
-  await clearOrdersCache(userId);
+  // await clearOrdersCache(userId);
 
   await orderQueue.add("assign-rider", {
     orderId: order.id,
@@ -172,23 +172,22 @@ exports.getOrders = async (id, type, page, limit) => {
     throw new Error("UserId is required");
   }
 
-  const cacheKey = `orders:${id}:${type}:${page}:${limit}`;
+  // const cacheKey = `orders:${id}:${type}:${page}:${limit}`;
 
-  // 1. Check cache
-  const cachedData = await redis.get(cacheKey);
+  // // 1. Check cache
+  // const cachedData = await redis.get(cacheKey);
+  // if (cachedData) {
+  //   console.log("Cache hit");
+  //   return JSON.parse(cachedData);
+  // }
 
-  if (cachedData) {
-    console.log("Cache hit");
-    return JSON.parse(cachedData);
-  }
-
-  // 2. Cache miss → DB hit
-  console.log("Cache miss, DB hit");
+  // // 2. Cache miss → DB hit
+  // console.log("Cache miss, DB hit");
 
   const orders = await orderRepo.getOrdersById(id, type, page, limit);
 
   // (Optional) you can skip caching empty results if you want
-  await redis.set(cacheKey, JSON.stringify(orders), "EX", 21600); // 6 hours
+  // await redis.set(cacheKey, JSON.stringify(orders), "EX", 21600); // 6 hours
 
   return orders;
 };
@@ -210,5 +209,12 @@ exports.updateStatus = async (id, status) => {
     throw new Error("Order already completed");
   }
 
-  return orderRepo.updateOrder(id, { status });
+  const updatedOrder = await orderRepo.updateOrder(id, { status });
+
+  console.log("update call");
+
+  // ✅ Clear cache after successful update
+  await clearOrdersCache(order.userId);
+
+  return updatedOrder;
 };

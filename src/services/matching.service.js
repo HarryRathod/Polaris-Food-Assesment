@@ -5,7 +5,6 @@ const redis = new IORedis({
   port: process.env.REDIS_PORT,
 });
 
-// Find riders near restaurant
 exports.findNearbyRiders = async (lat, lng) => {
   const radiusInKm = 5;
 

@@ -33,7 +33,7 @@ const Order = sequelize.define(
     },
     paymentStatus: {
       type: DataTypes.ENUM("PENDING", "PAID", "FAILED"),
-      defaultValue: "PENDING",
+      defaultValue: "PAID",
     },
     deliveryAddress: {
       type: DataTypes.STRING,

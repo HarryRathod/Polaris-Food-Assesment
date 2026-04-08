@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Menu</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <h2>Food App</h2>
+      <div id="navLinks"></div>
+    </div>
+
+    <div class="container">
+      <div class="section">
+        <h3>Add Menu Item</h3>
+        <input id="m_name" placeholder="Name" />
+        <input id="m_price" type="number" placeholder="Price" />
+        <select id="m_category">
+          <option value="veg">Veg</option>
+          <option value="non-veg">Non-Veg</option>
+        </select>
+        <button onclick="addMenuItem()">Add</button>
+      </div>
+
+      <div id="menu"></div>
+
+      <div class="section">
+        <h3>Cart</h3>
+        <div id="cart"></div>
+      </div>
+
+      <div class="section">
+        <h3>Coupons</h3>
+        <select id="couponDropdown"></select>
+        <div id="couponInfo"></div>
+      </div>
+
+      <button onclick="placeOrder()">Place Order</button>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/restaurant.js"></script>
+  </body>
+</html>
